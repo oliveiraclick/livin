@@ -4,8 +4,8 @@ import { Button } from './Button';
 import { Input } from './Input';
 // Correção: Removido 'Plus' que não era utilizado, mantendo apenas os ícones em uso nos 3 componentes.
 import { Heart, Search, User, Zap, Star, ArrowLeft, Globe, Image as ImageIcon } from 'lucide-react';
-import { MOCK_PROVIDERS } from '../types';
 import { supabase } from '../supabaseClient'; // Import supabase client
+import type { Profile } from '../types';
 
 // ===============================================
 // 1. SAAS LANDING PAGE (SAAS_LP)
@@ -14,12 +14,13 @@ export const SaaS_LP: React.FC = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [logoUrl, setLogoUrl] = useState('');
+  const setLogoPreview = setLogoUrl;
 
   useEffect(() => {
     const fetchLogo = async () => {
       const { data } = await supabase.from('app_settings').select('logo_url').eq('id', 1).single();
       if (data?.logo_url) {
-        setLogoUrl(data.logo_url);
+        setLogoPreview(data.logo_url);
       }
     };
     void fetchLogo();
@@ -104,7 +105,22 @@ export const SaaS_LP: React.FC = () => {
 export const Marketplace: React.FC = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<'product' | 'service'>('service');
-  const filteredProviders = MOCK_PROVIDERS.filter(p => p.provider_type === activeTab);
+  const [providers, setProviders] = useState<Profile[]>([]);
+
+  useEffect(() => {
+    const fetchProviders = async () => {
+      const { data } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('user_type', 'provider')
+        .eq('provider_type', activeTab);
+
+      if (data) {
+        setProviders(data);
+      }
+    };
+    void fetchProviders();
+  }, [activeTab]);
   const categories = ['Tudo', 'Beleza', 'Comida', 'Casa', 'Pets'];
   const categoryIcons = ['✨', '💅', '🍔', '🏠', '🐶'];
 
@@ -157,7 +173,7 @@ export const Marketplace: React.FC = () => {
         </div>
       </div>
       <div className="px-6 space-y-6">
-        {filteredProviders.map((provider) => (
+        {providers.map((provider: Profile) => (
           <div key={provider.id} onClick={() => navigate(`/provider/${provider.id}`)} className="bg-white rounded-[32px] p-4 shadow-soft border border-slate-50 flex gap-4 cursor-pointer">
             <div className="w-24 h-24 rounded-[24px] overflow-hidden relative shrink-0 bg-slate-200">
               {provider.avatar_url ? (

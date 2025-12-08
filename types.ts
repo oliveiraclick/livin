@@ -148,9 +148,6 @@ export interface RegistrationState {
   };
 }
 
-export const MOCK_PROVIDERS: ProviderProfile[] = []; // Empty mock providers as we use Supabase now
-
-export const MOCK_DESAPEGO_ITEMS: Product[] = []; // Empty mock items
 
 export const CATEGORIES_SERVICE = [
   { id: 'limpeza', name: 'Limpeza', icon: '🧹' },

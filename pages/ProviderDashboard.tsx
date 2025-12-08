@@ -1,9 +1,9 @@
 
 
-import React, { useState } from 'react';
-import { MOCK_PROVIDERS } from '../types';
+import React from 'react';
 import { LogOut, Plus, ArrowUpRight, Calendar, Box, Settings } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
 interface ProviderDashboardProps {
    onLogout: () => void;
@@ -11,7 +11,8 @@ interface ProviderDashboardProps {
 
 export const ProviderDashboard: React.FC<ProviderDashboardProps> = ({ onLogout }) => {
    const navigate = useNavigate();
-   const [provider] = useState(MOCK_PROVIDERS[0]);
+   const { profile } = useAuth();
+
 
    return (
       <div className="min-h-screen bg-[#f8fafc] pb-40">
@@ -29,7 +30,7 @@ export const ProviderDashboard: React.FC<ProviderDashboardProps> = ({ onLogout }
                   </div>
                   <div>
                      <h2 className="text-slate-400 text-xs font-bold uppercase tracking-wider">Modo Negócio</h2>
-                     <p className="text-white font-bold">{provider.full_name}</p>
+                     <p className="text-white font-bold">{profile?.full_name || 'Prestador'}</p>
                   </div>
                </div>
                <button onClick={onLogout} className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-white/20 transition-colors">
